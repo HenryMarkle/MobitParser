@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
+#include <cctype>
 
 #include <MobitParser/exceptions.h>
 #include <MobitParser/nodes.h>
@@ -320,6 +322,8 @@ std::unique_ptr<Node> parse_helper(std::vector<token>::const_iterator &cursor,
       while (peek != end) {
         if (is_props) {
           std::string key = peek->value;
+
+          std::transform(key.begin(), key.end(), key.begin(), ::tolower);
 
           if (++peek == end)
             throw parse_failure("property list expression ended prematurely "
