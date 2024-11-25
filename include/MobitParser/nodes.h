@@ -29,8 +29,6 @@ enum class unary_operation : uint8_t {
   index                // arr[0]
 };
 
-std::ostream &operator<<(std::ostream &stream, const Node *node);
-
 /// TODO: implement this
 inline int operator_precedence(token_type) { return 0; }
 
