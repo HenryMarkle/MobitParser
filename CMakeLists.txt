@@ -11,7 +11,17 @@ target_include_directories(MobitParser PUBLIC include)
 include(CTest)
 enable_testing()
 
+add_executable(token_test tests/token_test.cpp)
+target_link_libraries(token_test PRIVATE MobitParser)
+add_test(NAME TokenTest COMMAND token_test)
 
+add_executable(parse_test tests/parse_test.cpp)
+target_link_libraries(parse_test PRIVATE MobitParser)
+add_test(NAME ParseTest COMMAND parse_test)
+
+add_executable(gcall_test tests/gcall_test.cpp)
+target_link_libraries(gcall_test PRIVATE MobitParser)
+add_test(NAME GCallParseTest COMMAND gcall_test)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
