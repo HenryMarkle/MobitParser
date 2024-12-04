@@ -627,6 +627,278 @@ std::vector<token> tokenize_line(std::ifstream &file) {
   }
   return tokens;
 }
+bool tokenize_line(std::ifstream &file, std::vector<token> &tokens) {
+  tokens.clear();
+  bool result = true;
+
+  char c;
+  auto pos = file.tellg();
+
+  while (file.get(c)) {
+    if (c == '\r') {
+      auto saved_pos = file.tellg();
+      char seeked;
+
+      if (file.get(seeked) && seeked == '\n') {
+        return !tokens.empty();
+      } else {
+        file.seekg(saved_pos);
+        return !tokens.empty();
+      }
+    }
+    if (c == '\n')
+      return !tokens.empty();
+
+    switch (c) {
+    case ' ':
+    case '\r':
+    case '\n':
+    case '\t': {
+    } break;
+
+    case '[':
+      tokens.push_back(token(token_type::open_bracket, "["));
+      break;
+    case ']':
+      tokens.push_back(token(token_type::close_bracket, "]"));
+      break;
+
+    case '(':
+      tokens.push_back(token(token_type::open_paren, "("));
+      break;
+    case ')':
+      tokens.push_back(token(token_type::close_paren, ")"));
+      break;
+
+    case ',':
+      tokens.push_back(token(token_type::comma, ","));
+      break;
+    case ':':
+      tokens.push_back(token(token_type::colon, ":"));
+      break;
+
+    case '#': {
+      std::string symbol;
+
+      auto saved_pos = file.tellg();
+
+      char peeked;
+      while (file.get(peeked) && isalnum(peeked)) {
+        symbol.push_back(peeked);
+        saved_pos = file.tellg();
+      }
+
+      file.seekg(saved_pos);
+
+      tokens.push_back(token(token_type::symbol, std::move(symbol)));
+    } break;
+
+    case '"': {
+      std::string _str;
+
+      char peeked;
+      while (file.get(peeked) && peeked != '"') {
+        _str.push_back(peeked);
+      }
+
+      tokens.push_back(token(token_type::string, std::move(_str)));
+    } break;
+
+    case '>': {
+      auto saved_pos = file.tellg();
+      char peeked;
+      if (file.get(peeked)) {
+        if (peeked == '=') {
+
+          tokens.push_back(token(token_type::greater_or_eq, ">="));
+        } else {
+          file.seekg(saved_pos);
+          tokens.push_back(token(token_type::greater, ">"));
+        }
+      } else {
+        file.seekg(saved_pos);
+        tokens.push_back(token(token_type::greater, ">"));
+      }
+    } break;
+
+    case '<': {
+      auto saved_pos = file.tellg();
+      char peeked;
+      if (file.get(peeked)) {
+        if (peeked == '=') {
+          tokens.push_back(token(token_type::smaller_or_eq, "<="));
+        } else if (peeked == '>') {
+          tokens.push_back(token(token_type::inequal, "<>"));
+        } else {
+          file.seekg(saved_pos);
+          tokens.push_back(token(token_type::greater, "<"));
+        }
+      } else {
+        file.seekg(saved_pos);
+        tokens.push_back(token(token_type::greater, "<"));
+      }
+    } break;
+
+    case '=': {
+      tokens.push_back(token(token_type::equal, "="));
+
+    } break;
+
+    case '&': {
+      auto saved_pos = file.tellg();
+      char peeked;
+      if (file.get(peeked)) {
+        if (peeked == '&') {
+
+          tokens.push_back(token(token_type::space_concat, "&&"));
+        } else {
+          file.seekg(saved_pos);
+          tokens.push_back(token(token_type::concat, "&"));
+        }
+      } else {
+        file.seekg(saved_pos);
+        tokens.push_back(token(token_type::concat, "&"));
+      }
+    } break;
+
+    case '-':
+      tokens.push_back(token(token_type::subtract, "-"));
+      break;
+    case '+':
+      tokens.push_back(token(token_type::add, "+"));
+      break;
+    case '*':
+      tokens.push_back(token(token_type::multiply, "*"));
+      break;
+    case '/':
+      tokens.push_back(token(token_type::divide, "/"));
+      break;
+
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9': {
+      std::string number;
+
+      number.push_back(c);
+
+      bool floating = false;
+
+      auto saved_pos = file.tellg();
+      char peeked;
+      while (file.get(peeked) && (isdigit(peeked) || peeked == '.')) {
+        if (peeked == '.') {
+          if (floating)
+            throw double_decimal_point(
+                "floating number cannot have more than one decimal point");
+
+          floating = true;
+          number.push_back(peeked);
+        } else {
+          number.push_back(peeked);
+        }
+        saved_pos = file.tellg();
+      }
+      file.seekg(saved_pos);
+
+      if (floating) {
+        tokens.push_back(token(token_type::floating, std::move(number)));
+      } else {
+        tokens.push_back(token(token_type::integer, std::move(number)));
+      }
+    } break;
+
+    case 'n': {
+      char peeked;
+
+      if ((file.get(peeked) && peeked == 'o' && file.get(peeked) &&
+           peeked == 't')) {
+
+        tokens.push_back(token(token_type::negate, "not"));
+        break;
+      } else {
+        file.seekg(pos);
+      }
+    }
+
+    case 'a': {
+      char peeked;
+
+      if ((file.get(peeked) && peeked == 'n' && file.get(peeked) &&
+           peeked == 'd')) {
+
+        tokens.push_back(token(token_type::and_, "and"));
+        break;
+      } else {
+        file.seekg(pos);
+      }
+    }
+
+    case 'o': {
+      char peeked;
+
+      if ((file.get(peeked) && peeked == 'r')) {
+        tokens.push_back(token(token_type::or_, "or"));
+        break;
+      } else {
+        file.seekg(pos);
+      }
+    }
+
+    case 'm': {
+      char peeked;
+
+      if ((file.get(peeked) && peeked == 'o' && file.get(peeked) &&
+           peeked == 'd')) {
+
+        tokens.push_back(token(token_type::mod, "mod"));
+        break;
+      } else {
+        file.seekg(pos);
+      }
+    }
+
+    case 'v': {
+      char peeked;
+
+      if ((file.get(peeked) && peeked == 'o' && file.get(peeked) &&
+           peeked == 'i' && file.get(peeked) && peeked == 'd')) {
+
+        tokens.push_back(token(token_type::void_val, "void"));
+        break;
+      } else {
+        file.seekg(pos);
+      }
+    }
+
+    // identifier
+    default: {
+      std::string iden;
+      iden.push_back(c);
+
+      auto saved_pos = file.tellg();
+      char peeked;
+
+      while (file.get(peeked) && isalnum(peeked)) {
+        iden.push_back(peeked);
+        saved_pos = file.tellg();
+      }
+
+      tokens.push_back(token(token_type::identifier, std::move(iden)));
+      file.seekg(saved_pos);
+    } break;
+    }
+
+    pos = file.tellg();
+  }
+  return !tokens.empty();
+}
 
 std::vector<token> tokenize(const std::string &str) {
   if (str.size() == 0)

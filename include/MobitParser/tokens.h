@@ -80,5 +80,6 @@ std::ostream &operator<<(std::ostream &, const token &);
 
 std::vector<token> tokenize(std::ifstream &);
 std::vector<token> tokenize_line(std::ifstream &);
+bool tokenize_line(std::ifstream &, std::vector<token> &);
 std::vector<token> tokenize(const std::string &);
 }; // namespace mp
