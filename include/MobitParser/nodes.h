@@ -169,6 +169,11 @@ std::ostream &operator<<(std::ostream &, const Node *);
 
 /// @brief Constructs an abstract syntax tree from the expression string.
 /// @param str The expression string.
-/// @param flat_tree pre-evaluates some expression such as unary operations to numbers and global calls.
+/// @param flat_tree pre-evaluates some expression such as unary operations to
+/// numbers and global calls.
 std::unique_ptr<Node> parse(const std::string &str, bool flat_tree = true);
+
+/// @brief Constructs an abstact syntax tree from a node vector.
+std::unique_ptr<Node> parse(const std::vector<token> &tokens,
+                            bool flat_tree = true);
 }; // namespace mp

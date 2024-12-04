@@ -1,11 +1,11 @@
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <memory>
 #include <numeric>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <algorithm>
-#include <cctype>
 
 #include <MobitParser/exceptions.h>
 #include <MobitParser/nodes.h>
@@ -371,7 +371,7 @@ std::unique_ptr<Node> parse_helper(std::vector<token>::const_iterator &cursor,
 
         peek++;
       }
-      
+
       if (is_props) {
         expr = std::make_unique<Props>(std::move(map));
       } else {
@@ -393,6 +393,17 @@ std::unique_ptr<Node> parse(const std::string &str, bool flat_tree) {
 
   const auto tokens = tokenize(str);
 
+  if (tokens.empty())
+    return nullptr;
+
+  auto cursor = tokens.begin();
+  auto end = tokens.end();
+
+  auto expr = parse_helper(cursor, tokens.end(), 0, flat_tree);
+
+  return expr;
+}
+std::unique_ptr<Node> parse(const std::vector<token> &tokens, bool flat_tree) {
   if (tokens.empty())
     return nullptr;
 
