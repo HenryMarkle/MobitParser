@@ -107,8 +107,6 @@ std::vector<token> tokenize(std::ifstream &file) {
   while (file.get(c)) {
     switch (c) {
     case ' ':
-    case '\r':
-    case '\n':
     case '\t': {
     } break;
 
@@ -136,15 +134,9 @@ std::vector<token> tokenize(std::ifstream &file) {
     case '#': {
       std::string symbol;
 
-      auto saved_pos = file.tellg();
-
-      char peeked;
-      while (file.get(peeked) && isalnum(peeked)) {
-        symbol.push_back(peeked);
-        saved_pos = file.tellg();
+      while (file.peek() != EOF && isalnum(file.peek())) {
+        symbol.push_back(file.get());
       }
-
-      file.seekg(saved_pos);
 
       tokens.push_back(token(token_type::symbol, std::move(symbol)));
     } break;
@@ -246,9 +238,9 @@ std::vector<token> tokenize(std::ifstream &file) {
 
       bool floating = false;
 
-      auto saved_pos = file.tellg();
-      char peeked;
-      while (file.get(peeked) && (isdigit(peeked) || peeked == '.')) {
+      while ((isdigit(file.peek()) || file.peek() == '.')) {
+        char peeked = file.get();
+        
         if (peeked == '.') {
           if (floating)
             throw double_decimal_point(
@@ -259,9 +251,7 @@ std::vector<token> tokenize(std::ifstream &file) {
         } else {
           number.push_back(peeked);
         }
-        saved_pos = file.tellg();
       }
-      file.seekg(saved_pos);
 
       if (floating) {
         tokens.push_back(token(token_type::floating, std::move(number)));
@@ -281,6 +271,8 @@ std::vector<token> tokenize(std::ifstream &file) {
       } else {
         file.seekg(pos);
       }
+
+      break;
     }
 
     case 'a': {
@@ -294,6 +286,8 @@ std::vector<token> tokenize(std::ifstream &file) {
       } else {
         file.seekg(pos);
       }
+
+      break;
     }
 
     case 'o': {
@@ -305,6 +299,8 @@ std::vector<token> tokenize(std::ifstream &file) {
       } else {
         file.seekg(pos);
       }
+
+      break;
     }
 
     case 'm': {
@@ -318,6 +314,8 @@ std::vector<token> tokenize(std::ifstream &file) {
       } else {
         file.seekg(pos);
       }
+
+      break;
     }
 
     case 'v': {
@@ -331,6 +329,8 @@ std::vector<token> tokenize(std::ifstream &file) {
       } else {
         file.seekg(pos);
       }
+
+      break;
     }
 
     // identifier
