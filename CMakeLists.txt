@@ -23,6 +23,10 @@ add_executable(gcall_test tests/gcall_test.cpp)
 target_link_libraries(gcall_test PRIVATE MobitParser)
 add_test(NAME GCallParseTest COMMAND gcall_test)
 
+add_executable(file_test tests/file_test.cpp)
+target_link_libraries(file_test PRIVATE MobitParser)
+add_test(NAME FileTest COMMAND file_test)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
