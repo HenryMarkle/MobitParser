@@ -614,16 +614,11 @@ std::vector<token> tokenize_line(std::ifstream &file) {
       std::string iden;
       iden.push_back(c);
 
-      auto saved_pos = file.tellg();
-      char peeked;
-
-      while (file.get(peeked) && isalnum(peeked)) {
-        iden.push_back(peeked);
-        saved_pos = file.tellg();
+      while (file.peek() != EOF && isalnum(file.peek())) {
+        iden.push_back(file.get());
       }
 
       tokens.push_back(token(token_type::identifier, std::move(iden)));
-      file.seekg(saved_pos);
     } break;
     }
 
@@ -888,16 +883,11 @@ bool tokenize_line(std::ifstream &file, std::vector<token> &tokens) {
       std::string iden;
       iden.push_back(c);
 
-      auto saved_pos = file.tellg();
-      char peeked;
-
-      while (file.get(peeked) && isalnum(peeked)) {
-        iden.push_back(peeked);
-        saved_pos = file.tellg();
+      while (file.peek() != EOF && isalnum(file.peek())) {
+        iden.push_back(file.get());
       }
 
       tokens.push_back(token(token_type::identifier, std::move(iden)));
-      file.seekg(saved_pos);
     } break;
     }
 
