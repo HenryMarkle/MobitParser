@@ -7,6 +7,10 @@
 #include <unordered_map>
 #include <vector>
 
+#ifdef __linux__
+#include <string.h>
+#endif
+
 #include <MobitParser/exceptions.h>
 #include <MobitParser/nodes.h>
 #include <MobitParser/tokens.h>
@@ -153,6 +157,27 @@ constexpr int operator_precedence(operators op) {
   }
 
   return 0;
+}
+
+bool is_iden_const(const std::string &name) {
+  if (name == "RETURN") return true;
+  if (name == "ENTER") return true;
+  if (name == "SPACE") return true;
+  if (name == "QUOTE") return true;
+  if (name == "TRUE") return true;
+  if (name == "FALSE") return true;
+
+  return false;
+}
+
+const char *eval_const_iden(const std::string &name) {
+  if (name == "RETURN") return "\n";
+  if (name == "ENTER") return "\n";
+  if (name == "SPACE") return " ";
+  if (name == "QUOTE") return "\"";
+  if (name == "TRUE") return "true";
+  if (name == "FALSE") return "false";
+  return "";
 }
 
 std::unique_ptr<Node> parse_helper(std::vector<token>::const_iterator &cursor,
@@ -383,6 +408,41 @@ std::unique_ptr<Node> parse_helper(std::vector<token>::const_iterator &cursor,
 
   } break;
   }
+
+  if (expr != nullptr && flat_tree) {
+    String *str = dynamic_cast<String*>(expr.get());
+    Iden *iden = dynamic_cast<Iden*>(expr.get());
+
+    if (str != nullptr || iden != nullptr) {
+      std::string ss(str != nullptr ? str->str : eval_const_iden(iden->identifier));
+
+      while ((cursor+1) != end) {
+        auto peek = cursor + 1;
+
+        if (peek->type != token_type::concat && peek->type != token_type::space_concat) break;
+
+        auto rhs = peek + 1;
+        if (rhs == end) throw parse_failure("expected an expression after '&' or '&&'");
+
+        if (rhs->type == token_type::identifier && is_iden_const(rhs->value)) {
+          const char *const_val = eval_const_iden(rhs->value);
+
+          if (peek->type != token_type::space_concat) ss.append(" ");
+          ss.append(const_val);
+
+          cursor = rhs;
+        } else if (rhs->type == token_type::string) {
+          if (peek->type != token_type::space_concat) ss.append(" ");
+          ss.append(rhs->value);
+          cursor = rhs;
+        }
+        else break;
+      }
+
+      expr = std::make_unique<String>(ss);
+    }
+  }
+
 
   return expr;
 }
