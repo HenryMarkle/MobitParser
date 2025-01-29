@@ -11,6 +11,10 @@ target_include_directories(MobitParser PUBLIC include)
 include(CTest)
 enable_testing()
 
+add_executable(OpTest tests/parse_ops.cpp)
+target_link_libraries(OpTest PRIVATE MobitParser)
+add_test(NAME OPTEST COMMAND OpTest)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)

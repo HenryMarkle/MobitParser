@@ -635,17 +635,8 @@ bool tokenize_line(std::ifstream &file, std::vector<token> &tokens) {
   auto pos = file.tellg();
 
   while (file.get(c)) {
-    if (c == '\r') {
-      auto saved_pos = file.tellg();
-      char seeked;
-
-      if (file.get(seeked) && seeked == '\n') {
-        return !tokens.empty();
-      } else {
-        file.seekg(saved_pos);
-        return !tokens.empty();
-      }
-    }
+    if (c == '\r') 
+      return !tokens.empty();
     if (c == '\n')
       return !tokens.empty();
 
