@@ -170,19 +170,15 @@ std::vector<token> tokenize(std::ifstream &file) {
     } break;
 
     case '<': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
+      if (char peeked = file.peek()) {
         if (peeked == '=') {
           tokens.push_back(token(token_type::smaller_or_eq, "<="));
         } else if (peeked == '>') {
           tokens.push_back(token(token_type::inequal, "<>"));
         } else {
-          file.seekg(saved_pos);
           tokens.push_back(token(token_type::greater, "<"));
         }
       } else {
-        file.seekg(saved_pos);
         tokens.push_back(token(token_type::greater, "<"));
       }
     } break;
@@ -193,18 +189,10 @@ std::vector<token> tokenize(std::ifstream &file) {
     } break;
 
     case '&': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
-        if (peeked == '&') {
-
-          tokens.push_back(token(token_type::space_concat, "&&"));
-        } else {
-          file.seekg(saved_pos);
-          tokens.push_back(token(token_type::concat, "&"));
-        }
+      if (file.peek() == '&') {
+        file.get();
+        tokens.push_back(token(token_type::space_concat, "&&"));
       } else {
-        file.seekg(saved_pos);
         tokens.push_back(token(token_type::concat, "&"));
       }
     } break;
@@ -446,19 +434,15 @@ std::vector<token> tokenize_line(std::ifstream &file) {
     } break;
 
     case '<': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
+      if (char peeked = file.peek()) {
         if (peeked == '=') {
           tokens.push_back(token(token_type::smaller_or_eq, "<="));
         } else if (peeked == '>') {
           tokens.push_back(token(token_type::inequal, "<>"));
         } else {
-          file.seekg(saved_pos);
           tokens.push_back(token(token_type::greater, "<"));
         }
       } else {
-        file.seekg(saved_pos);
         tokens.push_back(token(token_type::greater, "<"));
       }
     } break;
@@ -469,18 +453,10 @@ std::vector<token> tokenize_line(std::ifstream &file) {
     } break;
 
     case '&': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
-        if (peeked == '&') {
-
-          tokens.push_back(token(token_type::space_concat, "&&"));
-        } else {
-          file.seekg(saved_pos);
-          tokens.push_back(token(token_type::concat, "&"));
-        }
+      if (file.peek() == '&') {
+        file.get();
+        tokens.push_back(token(token_type::space_concat, "&&"));
       } else {
-        file.seekg(saved_pos);
         tokens.push_back(token(token_type::concat, "&"));
       }
     } break;
@@ -634,11 +610,13 @@ bool tokenize_line(std::ifstream &file, std::vector<token> &tokens) {
   char c;
   auto pos = file.tellg();
 
-  while (file.get(c)) {
+  while (c = file.peek()) {
     if (c == '\r') 
       return !tokens.empty();
     if (c == '\n')
       return !tokens.empty();
+
+    file.get();
 
     switch (c) {
     case ' ':
@@ -707,19 +685,15 @@ bool tokenize_line(std::ifstream &file, std::vector<token> &tokens) {
     } break;
 
     case '<': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
+      if (char peeked = file.peek()) {
         if (peeked == '=') {
           tokens.push_back(token(token_type::smaller_or_eq, "<="));
         } else if (peeked == '>') {
           tokens.push_back(token(token_type::inequal, "<>"));
         } else {
-          file.seekg(saved_pos);
           tokens.push_back(token(token_type::greater, "<"));
         }
       } else {
-        file.seekg(saved_pos);
         tokens.push_back(token(token_type::greater, "<"));
       }
     } break;
@@ -730,18 +704,10 @@ bool tokenize_line(std::ifstream &file, std::vector<token> &tokens) {
     } break;
 
     case '&': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
-        if (peeked == '&') {
-
-          tokens.push_back(token(token_type::space_concat, "&&"));
-        } else {
-          file.seekg(saved_pos);
-          tokens.push_back(token(token_type::concat, "&"));
-        }
+      if (file.peek() == '&') {
+        file.get();
+        tokens.push_back(token(token_type::space_concat, "&&"));
       } else {
-        file.seekg(saved_pos);
         tokens.push_back(token(token_type::concat, "&"));
       }
     } break;
