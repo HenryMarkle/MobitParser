@@ -153,19 +153,15 @@ std::vector<token> tokenize(std::ifstream &file) {
     } break;
 
     case '>': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
+      if (char peeked = file.peek()) {
         if (peeked == '=') {
-
           tokens.push_back(token(token_type::greater_or_eq, ">="));
+          file.get();
         } else {
-          file.seekg(saved_pos);
           tokens.push_back(token(token_type::greater, ">"));
         }
       } else {
-        file.seekg(saved_pos);
-        tokens.push_back(token(token_type::greater, ">"));
+          tokens.push_back(token(token_type::greater, ">"));
       }
     } break;
 
@@ -417,19 +413,15 @@ std::vector<token> tokenize_line(std::ifstream &file) {
     } break;
 
     case '>': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
+      if (char peeked = file.peek()) {
         if (peeked == '=') {
-
           tokens.push_back(token(token_type::greater_or_eq, ">="));
+          file.get();
         } else {
-          file.seekg(saved_pos);
           tokens.push_back(token(token_type::greater, ">"));
         }
       } else {
-        file.seekg(saved_pos);
-        tokens.push_back(token(token_type::greater, ">"));
+          tokens.push_back(token(token_type::greater, ">"));
       }
     } break;
 
@@ -668,19 +660,15 @@ bool tokenize_line(std::ifstream &file, std::vector<token> &tokens) {
     } break;
 
     case '>': {
-      auto saved_pos = file.tellg();
-      char peeked;
-      if (file.get(peeked)) {
+      if (char peeked = file.peek()) {
         if (peeked == '=') {
-
           tokens.push_back(token(token_type::greater_or_eq, ">="));
+          file.get();
         } else {
-          file.seekg(saved_pos);
           tokens.push_back(token(token_type::greater, ">"));
         }
       } else {
-        file.seekg(saved_pos);
-        tokens.push_back(token(token_type::greater, ">"));
+          tokens.push_back(token(token_type::greater, ">"));
       }
     } break;
 
