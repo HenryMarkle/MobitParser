@@ -18,7 +18,7 @@ target_link_libraries(yourApp PRIVATE MobitParser)
 
 ## Usage
 
-```
+```cpp
 
 std::string script("[ 1, \"Hello\", color(200, 200, 200), [ #tp: \"box\", #repeat: 1 ] ]");
 
