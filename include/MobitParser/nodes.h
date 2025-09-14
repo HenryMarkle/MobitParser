@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <MobitParser/tokens.h>
+#include "MobitParser/tokens.h"
 
 namespace mp {
 enum class binary_operation : uint8_t {

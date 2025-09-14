@@ -2,5 +2,7 @@
 /out
 /tests
 
+compile_commands.json
+
 .vscode
 .cache

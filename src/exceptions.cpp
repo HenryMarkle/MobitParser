@@ -1,6 +1,4 @@
-#include <string>
-
-#include <MobitParser/exceptions.h>
+#include "MobitParser/exceptions.h"
 
 namespace mp {
 double_decimal_point::double_decimal_point(const std::string &msg)

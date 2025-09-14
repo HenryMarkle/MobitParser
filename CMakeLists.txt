@@ -1,20 +1,11 @@
-cmake_minimum_required(VERSION 3.10.0)
+cmake_minimum_required(VERSION 3.16.0)
 project(MobitParser VERSION 0.1.0 LANGUAGES C CXX)
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB LIB_SOURCES src/*.cpp)
-include_directories(include)
 add_library(MobitParser STATIC ${LIB_SOURCES})
 target_include_directories(MobitParser PUBLIC include)
-
-include(CTest)
-enable_testing()
-
-add_executable(OpTest tests/parse_ops.cpp)
-target_link_libraries(OpTest PRIVATE MobitParser)
-add_test(NAME OPTEST COMMAND OpTest)
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)

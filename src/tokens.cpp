@@ -1,9 +1,8 @@
 #include <fstream>
 #include <string>
-#include <vector>
 
-#include <MobitParser/exceptions.h>
-#include <MobitParser/tokens.h>
+#include "MobitParser/exceptions.h"
+#include "MobitParser/tokens.h"
 
 namespace mp {
 std::ostream &operator<<(std::ostream &stream, const token &token) {
@@ -602,7 +601,7 @@ bool tokenize_line(std::ifstream &file, std::vector<token> &tokens) {
   char c;
   auto pos = file.tellg();
 
-  while (c = file.peek()) {
+  while ((c = file.peek())) {
     if (c == '\r') 
       return !tokens.empty();
     if (c == '\n')
